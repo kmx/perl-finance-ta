@@ -1,0 +1,36 @@
+\B\.svn\b
+\B\.git\b
+\B\.gitignore\b
+
+\bMANIFEST\.bak
+^MANIFEST\.SKIP
+\bblib/
+\b_tmp/
+\bpm_to_blib/
+\bMakefile$
+
+# Avoid temp and backup files.
+~$
+\.old$
+\#$
+\b\.#
+\.bak$
+\.tmp$
+\.#
+\.rej$
+\.c$
+\.o$
+\.obj$
+\.base$
+\.bs$
+\.def$
+\.exp$
+
+# Avoid configuration metadata file
+^MYMETA\.
+
+# Avoid archives of this distribution
+\bFinance-TA-v[\d\.\_]+
+
+^MYMETA\.json$
+^MYMETA\.yml$

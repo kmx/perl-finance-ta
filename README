@@ -1,0 +1,228 @@
+NAME
+
+    Finance::TA - Perl wrapper for ta-lib (http://ta-lib.org)
+
+SYNOPSIS
+
+    use Finance::TA;
+       
+    my @open  = (45.23, 44.89, 45.23, 43.39, 42.22, 41.81, 44.01, 44.91);
+    my @high  = (45.23, 44.39, 45.22, 46.81, 47.01, 46.91, 45.23, 44.89); 
+    my @low   = (41.81, 44.01, 44.91, 45.23, 44.89, 45.23, 43.39, 42.22);
+    my @close = (42.22, 41.81, 44.01, 44.91, 45.23, 44.89, 45.23, 43.39);
+
+    my ($retCode, $begIdx, $result);
+
+    ($retCode, $begIdx, $result) = TA_AVGPRICE(0, $#open, \@open, \@high, \@low, \@close);
+    print "TA_AVGPRICE = ";
+    printf "%.2f ", $_ for (@$result);
+    print "\n";
+
+    ($retCode, $begIdx, $result) = TA_MAX(0, $#open, \@open, 3);
+    print "TA_MAX      = ";
+    printf "%.2f ", $_ for (@$result);
+    print "\n";
+
+USING TA-LIB IN PERL
+
+The module covers all TA-LIB functions, a few exceptions exist.
+
+In general, the following usage rules apply:
+ * structs are turned to Perl classes, so can be created using 'new'
+ * access to struct fields are provided through tied variables
+    e.g.
+        print $history->{period};
+ * Ouput parameters are returned as elements in the return list
+    e.g.  
+        $ts = new TA_Timestamp;
+        TA_SetDate($ts, 2004, 2, 29);
+        @ret = TA_GetDate($ts);
+        # @ret == ($TA_SUCCESS, 2004, 2, 29);
+ * Null pointers are represented by undef
+
+There are some exceptions and there are easier ways of doing things:
+
+* There is no need to call &TA_Initialize.  The module initializes itself on
+'use' with default parameters.  Call &TA_Initialize if you need to provide
+your own init params.
+
+* There is no need to call &TA_Shutdown, ever.  The module shuts itself down
+on 'END'. Calling &TA_Initialize on already initialized library
+automatically invokes &TA_Shutdown first.  If you call &TA_Shutdown, make
+sure that there are no defined "TA" variables around.  Some objects make
+calls to TA-LIB in their destructors.
+
+* Instead of doing
+    $rci = new TA_RetCodeInfo;
+    TA_SetRetCodeInfo($retCode, $rci);
+you may prefer:
+    $rci = new TA_RetCodeInfo($retCode);
+
+* As a bonus to Perl programmers, the constructor of TA_Timestamp allows for
+initializing the date and time:
+    $ts = new TA_Timestamp(2004, 2, 29, 9, 11, 59);
+    $ts = new TA_Timestamp(2004, 2, 29);  # time set to zero
+But There's More Than One Way To Do It.
+    $ts = new TA_Timestamp("2004-02-29 09:11:59");
+    $ts = new TA_Timestamp("2004-02-29");
+To be parsed, all numbers have to be two-digit (except the year).  Superfluous
+characters are ignored. Dash separators for date, colons for time.
+
+* Some other TA_Timestamp goodies: synthesized attributes (data members):
+    $y = $ts->{year};
+    $m = $ts->{month};
+    $s = $ts->{day};
+    $ts->{hours} = 12;
+    $ts->{minutes} = 30;
+    $ts->{seconds} = 59;
+
+* Do not call &TA_HistoryAlloc and &TA_HistoryFree directly.  Simply use
+&TA_History::new.  The parameters to &new are the same as to
+TA_HistoryAlloc(). 
+E.g.:
+    my $haParam = new TA_HistoryAllocParam;  # my $haParam = {}; works too
+    $haParam->{category} = "US.NASDAQ.STOCKS";
+    $haParam->{symbol} = "LNUX";
+    $haParam->{period} = $TA_DAILY;
+    $haParam->{field} = $TA_ALL;
+    my $hist = new TA_History($udBase, $haParam);
+    if ($hist->{retCode} == $TA_SUCCESS) {
+        ...
+    }
+Alternatively:
+    my $hist = $udBase->History($haParam);
+    if ($hist->{retCode} == $TA_SUCCESS) {
+        ...
+    }
+Alternatively:
+    my $hist = $udBase->History({
+            category => "US.NASDAQ.STOCKS", 
+            symbol => "LNUX", 
+            period => $TA_DAILY,
+            field => $TA_ALL,
+        });
+
+* Note that TA_History objects are read-only.
+
+* The TA_History member arrays are made available as references to Perl
+arrays.  Examples:
+    print $hist->{close}[0], "\n";
+    $close_series = $hist->{close};
+    print $$close_series[0], "\n";
+    print "@$close_series\n";
+
+* Note that each access to a tied member variable is going through the
+thunk code from Perl to C and back, so for the sake of performance, 
+consider copying the history arrays to Perl arrays.
+Eg.
+    # slow
+    for ($i = 0;  $i < $history->{nbBars};  $i++) {
+        print $history->{close}[$i], "\n";
+    }
+    # fast
+    @close = @{ $history->{close} };
+    for $close (@close) {
+        print $close, "\n";
+    }
+
+* If you do this for the timestamp array, note that the Perl array contains
+only the references to C Timestamp structs, not the object themselves.
+The C structs fall under the authority of C hence are not reference-counted.
+This means that if you undef the history, the references to timestamps become
+garbage.
+
+* Insead of doing:
+    $retCode = TA_UDBaseAlloc(\$udBase);
+    TA_UDBaseFree($udBase)
+you may strongly prefer:
+    $udBase = new TA_UDBase; 
+In the former case, you have to call &TA_UDBaseFree, otherwise a memory leak
+will occur.  Also, after the call to &TA_UDBaseFree, you must not use the
+variable anywhere, otherwise a segmentation fault may occur.  In such case it
+is safer to undef the variable directly after the call to &TA_UDBaseFree.
+In the latter case, the database will be freed automatically when $udBase
+goes out of scope or is redefined. If the allocation fails, $udBase will be
+undef.  There is no way of getting the ret code then.  But hey, what can go
+wrong with TA_UDBaseAlloc()?  And you are freed from the hurdle of keeping
+track of allocation and deallocation.  This is the True Perl Way.
+
+* The same as above applies to TA_FuncHandle, TA_FuncInfo, except that there
+is no need (and no possibility) to deallocate the handles.
+
+* Instead of TA_CategoryTableAlloc/TA_CategoryTableFree use just
+&TA_CategoryTable.  This function returns a Perl list of strings, so there is
+no need do deallocate it explicitly.  Note that the first list element is the
+return code, as usual.  The same applies to TA_SymbolTableAlloc/Free,
+TA_GoupTableAlloc/Free, TA_FuncTableAlloc/Free.
+
+* Alternatively, you may want to use the object interface of TA_UDBase:
+    @categories = $udBase->CategoryTable();
+    @symbols = $udBase->SymbolTable("ZZ.OTHER.OTHER");
+    @symbols = $udBase->SymbolTable(); # defaults to $TA_DEFAULT_CATEGORY
+In such case, you don't have to bother about the error code; you get undef
+value in case of any error.
+
+* C functions in ta_func have three groups of parameters, input, optional
+input and output.  The input parameters are startIdx, endIdx, and one or more
+arrays with numbers, These are also expected parameters of the Perl
+functions, with a note that in place of arrays, references to arrays are
+expected.
+
+The optional parameters can be set to $TA_INTEGER_DEFAULT/$TA_REAL_DEFAULT or
+undef, or ommitted altogether.
+
+The output parameters are retured in the return array.  The returned array
+has the following structure: return code of the function, begin index, and
+one or more references to output arrays.  The parameter outNbElement used in
+the C functions is not passed to Perl as it can be easilly obtained by
+evaluating an array in a scalar context.
+
+Example (default optInTimePeriod):
+    ($retCode, $begIdx, $outReal) = TA_MAX(0, $#inReal, \@inReal);
+
+More examples in swig/src/tools/test_perl/ta_func.t
+
+* Several complex TA-LIB functions accept a pointer to a struct containing
+the parameters for the function invocation.  This is to avoid long argument
+lists in function signatures.  Using this in Perl is rather inconvenient,
+meaning that a specific object has to be created, and each of it's fields has
+to be initialised explicitly through tied variables.  A simpler way exists
+if you use the object-oriented interface of the wrapper.  Instead of passing
+a reference to a specific object type as required by TA-LIB, you may pass
+a reference to a (possibly unnamed) plain hash.  
+This works for the following functions: TA_History (see example above), 
+AddDataSource, TradeLogAdd.
+
+LICENSE AND COPYRIGHT
+
+ TA-LIB Copyright (c) 1999-2011
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or
+ without modification, are permitted provided that the following
+ conditions are met:
+
+ - Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+ - Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the
+   distribution.
+
+ - Neither name of author nor the names of its contributors
+   may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
