@@ -1,4 +1,6 @@
 use Finance::TA;
+use Data::Dump 'pp';
+use Data::Dumper;
 
 our $level = shift || 5;
 
@@ -90,12 +92,13 @@ sub display_range {
     #print ident($ident), "Start: $data->{suggested_start}\n";
     #print ident($ident), "End: $data->{suggested_end}\n";
     #print ident($ident), "Step: $data->{suggested_increment}\n";
-    $rv .= "min:$data->{min} " if defined $data->{min};
-    $rv .= "max:$data->{max} " if defined $data->{max};
-    $rv .= "precision:$data->{precision} " if $type == $TA_OptInput_RealRange && defined $data->{precision};
+    $rv .= "min=$data->{min} " if defined $data->{min};
+    $rv .= "max=$data->{max} " if defined $data->{max};
+    #$rv .= "precision=$data->{precision} " if $type == $TA_OptInput_RealRange && defined $data->{precision};
     #$rv .= "start:$data->{suggested_start} " if defined $data->{suggested_start};
     #$rv .= "end:$data->{suggested_end} " if defined $data->{suggested_end};
     #$rv .= "step:$data->{suggested_increment}" if defined $data->{suggested_increment};
+    $rv =~ s/\s*$//;
     return $rv;
 }
 
@@ -105,7 +108,8 @@ sub display_list {
     my $rv;
     for (my $i = 0;  $i < $data->{nbElement};  $i++) {
         #print ident($ident), $data->{data}[$i]{string}, ": ", $data->{data}[$i]{value}, "\n";
-	$rv .= $data->{data}[$i]{string}.":".$data->{data}[$i]{value}." ";
+	#$rv .= $data->{data}[$i]{string}.":".$data->{data}[$i]{value}." ";
+	$rv .= $data->{data}[$i]{value}."=".$data->{data}[$i]{string}." ";
     }
     $rv =~ s/\s*$//;
     return $rv;
@@ -115,7 +119,7 @@ sub display_inpar {
     my ($fh, $i, $ident) = @_;
     my @params;
     my @comments;
-    my $info = $fh->GetInputParameterInfo($i);
+    my $info = $fh->GetInputParameterInfo($i);    
     if(in_type($info->{type}) eq 'TA_Input_Real') {
       push @params, '\@'.$info->{paramName};
       push @comments, '@'.$info->{paramName}.' - real values array';
@@ -134,11 +138,11 @@ sub display_inpar {
     }
     elsif ($info->{paramName} eq 'inPriceHL') {
       push @params, qw/\@high \@low/;
-      push @comments, '@high, @low - real values arrays, all have to be the same size';
+      push @comments, '@high, @low - real values arrays, both have to be the same size';
     }
     elsif ($info->{paramName} eq 'inPriceV') {
       push @params, qw/\@volume/;
-      push @comments, '@volume - real value array';
+      push @comments, '@volume - real values array';
     }
     else {
       die "INPAR.ERROR: paramname=",$info->{paramName},"\n","intype=",in_type($info->{type}),"\n";
@@ -156,20 +160,18 @@ sub display_optpar {
     my @params;
     my @comments;
     my $info = $fh->GetOptInputParameterInfo($i);
+    my $h = ' ['.$info->{hint}.']' if $info->{hint};
     if(opt_type($info->{type}) eq 'TA_OptInput_IntegerRange') {
       push @params, '$'.$info->{paramName};
-      push @comments, '$'.$info->{paramName}.' - integer';
-      #push @params, '$'.$info->{paramName}.'FROMint', '$'.$info->{paramName}.'TOint'; #xxx
-      #push @comments, '$'.$info->{paramName}.'XXX - integers';
+      push @comments, '$'.$info->{paramName}.$h.' - integer (optional)';
     }    
     elsif(opt_type($info->{type}) eq 'TA_OptInput_RealRange') {
       push @params, '$'.$info->{paramName};
-      push @comments, '$'.$info->{paramName}.' - real number';
-      #push @params, '$'.$info->{paramName}.'FROMreal', '$'.$info->{paramName}.'TOreal'; #xxx
-      #push @comments, '$'.$info->{paramName}.'XXX - real numbers';
+      push @comments, '$'.$info->{paramName}.$h.' - real number (optional)';
     }    
-    elsif(opt_type($info->{type}) eq 'TA_OptInput_IntegerList') {
-      push @params, '\@'.$info->{paramName}.'LISTint'; #xxx
+    elsif(opt_type($info->{type}) eq 'TA_OptInput_IntegerList' && $info->{paramName} =~ /^optIn(Fast|Slow|Signal|Slow)?(K_|D_)?MAType$/) {
+      push @params, '$'.$info->{paramName};
+      push @comments, '$'.$info->{paramName}.$h.' - integer (optional)';
     }    
     else {
       die "OPTPAR.ERROR: paramname=",$info->{paramName},"\n","intype=",opt_type($info->{type}),"\n";
@@ -187,22 +189,22 @@ sub display_optpar {
     my $c1 = display_range($info->{dataSet}, $info->{type}, $ident+1) if ($info->{type} == $TA_OptInput_RealRange) || ($info->{type} == $TA_OptInput_IntegerRange);    
     push @comments, "    valid range: $c1" if defined $c1;
     my $c2 = display_list($info->{dataSet}, $ident+1) if ($info->{type} == $TA_OptInput_RealList) || ($info->{type} == $TA_OptInput_IntegerList);
-    push @comments, "    valid list: $c2" if defined $c2;
+    push @comments, "    valid values: $c2" if defined $c2;
     return \@params, \@comments;
 }
 
 sub display_outpar {
     my ($fh, $i, $ident) = @_;
-    my @retvals;
+    my @returnss;
     my @comments;
     my $info = $fh->GetOutputParameterInfo($i);
     if (out_type($info->{type}) eq 'TA_Output_Real') {
-      push @retvals, '$'.$info->{paramName};
-      push @comments, 'retval: $'.$info->{paramName}.' - arrayref to real values array';
+      push @returnss, '$'.$info->{paramName};
+      push @comments, 'returns: $'.$info->{paramName}.' - reference to real values array';
     }
     elsif (out_type($info->{type}) eq 'TA_Output_Integer') {
-      push @retvals, '$'.$info->{paramName};
-      push @comments, 'retval: $'.$info->{paramName}.' - arrayref to integer values array';
+      push @returnss, '$'.$info->{paramName};
+      push @comments, 'returns: $'.$info->{paramName}.' - reference to integer values array';
     }
     else {
       die "OUTPAR.ERROR: paramname=",$info->{paramName},"\n","intype=",out_type($info->{type}),"\n";
@@ -212,10 +214,8 @@ sub display_outpar {
     my @flags = out_flags($info->{flags});
     #print( ident($ident), "Flags: @flags\n") if @flags > 0;
     #print ident($ident), "Type: ", out_type($info->{type}), "\n";
-    return \@retvals, \@comments;
+    return \@returnss, \@comments;
 }
-
-use Data::Dump 'pp';
 
 open PODFILE, '>', 'tmp.pod';
 
@@ -230,7 +230,7 @@ Version 0.4.0
 
 =head1 DESCRIPTION
 
-L<TA-Lib|http://ta-lib.org> comprise of multi-platform tools for market analysis. TA-Lib is widely used
+L<TA-Lib|"http://ta-lib.org"> comprise of multi-platform tools for market analysis. TA-Lib is widely used
 by trading software developers requiring to perform technical analysis of financial market data.
 It includes approx 200 indicators such as ADX, MACD, RSI, Stochastic, Bollinger Bands etc.
 
