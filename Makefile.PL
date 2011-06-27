@@ -2,8 +2,8 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-my $libs   = $ENV{TALIB_LIBS} || `ta-lib-config --libs`;
-my $cflags = $ENV{TALIB_CFLAGS} || `ta-lib-config --cflags`;
+my $libs = defined $ENV{TALIB_LIBS} ? $ENV{TALIB_LIBS} : `ta-lib-config --libs`;
+my $cflags = defined $ENV{TALIB_CFLAGS} ? $ENV{TALIB_CFLAGS} : `ta-lib-config --cflags`;
 
 unless ($libs) {
   warn "\nERROR: ta-lib not found on your system!\n\n";
