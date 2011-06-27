@@ -297,6 +297,9 @@ Finance::TA module checks during its installation (in given order):
 
 =item * Environment variables C<TALIB_CFLAGS> and C<TALIB_LIBS>
 
+ # you can use these like:
+ TALIB_CFLAGS='-I/usr/local/include/ta-lib' TALIB_LIBS='-L/usr/local/lib -lta_lib' perl Makefile.PL
+
 =item * Config script C<ta-lib-config --cflags> and C<ta-lib-config --libs>
 
 =back

@@ -21,6 +21,11 @@ WriteMakefile(
   PREREQ_PM    => { 'Test'   => 0 },
   dist         => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
   clean        => { FILES => 'Finance-TA-*' },
+  META_MERGE   => {
+      no_index     => { directory => ['_swig'] },
+      homepage     => 'http://ta-lib.org/',
+      repository   => 'https://github.com/kmx/perl-finance-ta',
+  },
   # generating ta_libc_wrap.c + TA.pm via swig (needed only when upgrading to the newer version)
   'depend'       => { 
       'ta_libc_wrap.c TA.pm' => "_swig/ta_func.swg _swig/ta_libc.swg _swig/perl.pm\n".
