@@ -10,7 +10,7 @@ tmp*
 *.bak
 *.o
 *.obj
-*.c
+TA.c
 *.base
 *.def
 *.bs

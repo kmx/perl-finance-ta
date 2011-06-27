@@ -1,20 +1,1703 @@
 =head1 NAME
 
-Finance::TA - Perl wrapper for ta-lib (http://ta-lib.org)
+Finance::TA - Perl wrapper for Technical Analysis Library (http://ta-lib.org)
 
 =head1 VERSION
 
 Version 0.4.0
 
+=head1 DESCRIPTION
+
+L<TA-Lib|http://ta-lib.org> comprise of multi-platform tools for market analysis. TA-Lib is widely used
+by trading software developers requiring to perform technical analysis of financial market data.
+It includes approx 200 indicators such as ADX, MACD, RSI, Stochastic, Bollinger Bands etc.
+
+Perl bindings for TA-Lib are more or less 1:1 wrapper around the TA-Lib's C API functions.
+
 =head1 SYNOPSIS
 
  my @series = ('91.500000','94.815000','94.375000','95.095000','93.780000',
                '94.625000','92.530000','92.750000','90.315000','92.470000');
- my ($retCode, $begIdx, $result1) = TA_MAX(0, $#series, \@series, 4);
+ my ($retCode, $begIdx, $result) = TA_MAX(0, $#series, \@series, 4);
 
+General calling convention - let us have:
+
+  ($retCode, $begIdx, $outReal) = TA_MAX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+
+The first two params C<$startIdx> and C<$endIdxReturn> are common for all TA functions, they follow the original API which means:
+
+=over
+
+=item * B<$startIdx> start index for input data - most likely it sould be C<0>
+
+=item * B<$endIdxReturn> end index for input data - most likely it sould be C<$#inReal>
+
+=back
+
+Return values C<$retCode> and C<$begIdx> are common for all TA functions, they follow the original API which means:
+
+=over
+
+=item * B<$retCode> should return C<$TA_SUCCESS> on success
+
+=item * B<$begIdx> is expected to be 0, it is an index to C<@$outReal> array point to the beginning of the output data
+
+=back
+ 
 =head1 SUBROUTINES/METHODS
 
-XXX TODO XXX
+=head2 Version related functions
+
+ use Finance::TA;
+ print "TA_GetVersionString = ", TA_GetVersionString(), "\n";
+ print "TA_GetVersionMajor  = ", TA_GetVersionMajor(), "\n";
+ print "TA_GetVersionMinor  = ", TA_GetVersionMinor(), "\n";
+ print "TA_GetVersionBuild  = ", TA_GetVersionBuild(), "\n";
+ print "TA_GetVersionDate   = ", TA_GetVersionDate(), "\n";
+ print "TA_GetVersionTime   = ", TA_GetVersionTime(), "\n";
+
+
+=head2 Group: Math Operators
+
+=head3 TA_ADD (Vector Arithmetic Add)
+
+ ($retCode, $begIdx, $outReal) = TA_ADD($startIdx, $endIdx, \@inReal0, \@inReal1);
+ 
+ # @inReal0 - real values array
+ # @inReal1 - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_DIV (Vector Arithmetic Div)
+
+ ($retCode, $begIdx, $outReal) = TA_DIV($startIdx, $endIdx, \@inReal0, \@inReal1);
+ 
+ # @inReal0 - real values array
+ # @inReal1 - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MAX (Highest value over a specified period)
+
+ ($retCode, $begIdx, $outReal) = TA_MAX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MAXINDEX (Index of highest value over a specified period)
+
+ ($retCode, $begIdx, $outInteger) = TA_MAXINDEX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_MIN (Lowest value over a specified period)
+
+ ($retCode, $begIdx, $outReal) = TA_MIN($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MININDEX (Index of lowest value over a specified period)
+
+ ($retCode, $begIdx, $outInteger) = TA_MININDEX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_MINMAX (Lowest and highest values over a specified period)
+
+ ($retCode, $begIdx, $outMin, $outMax) = TA_MINMAX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outMin - arrayref to real values array
+ # retval: $outMax - arrayref to real values array
+
+
+=head3 TA_MINMAXINDEX (Indexes of lowest and highest values over a specified period)
+
+ ($retCode, $begIdx, $outMinIdx, $outMaxIdx) = TA_MINMAXINDEX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outMinIdx - arrayref to integer values array
+ # retval: $outMaxIdx - arrayref to integer values array
+
+
+=head3 TA_MULT (Vector Arithmetic Mult)
+
+ ($retCode, $begIdx, $outReal) = TA_MULT($startIdx, $endIdx, \@inReal0, \@inReal1);
+ 
+ # @inReal0 - real values array
+ # @inReal1 - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SUB (Vector Arithmetic Substraction)
+
+ ($retCode, $begIdx, $outReal) = TA_SUB($startIdx, $endIdx, \@inReal0, \@inReal1);
+ 
+ # @inReal0 - real values array
+ # @inReal1 - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SUM (Summation)
+
+ ($retCode, $begIdx, $outReal) = TA_SUM($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Math Transform
+
+=head3 TA_ACOS (Vector Trigonometric ACos)
+
+ ($retCode, $begIdx, $outReal) = TA_ACOS($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ASIN (Vector Trigonometric ASin)
+
+ ($retCode, $begIdx, $outReal) = TA_ASIN($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ATAN (Vector Trigonometric ATan)
+
+ ($retCode, $begIdx, $outReal) = TA_ATAN($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_CEIL (Vector Ceil)
+
+ ($retCode, $begIdx, $outReal) = TA_CEIL($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_COS (Vector Trigonometric Cos)
+
+ ($retCode, $begIdx, $outReal) = TA_COS($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_COSH (Vector Trigonometric Cosh)
+
+ ($retCode, $begIdx, $outReal) = TA_COSH($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_EXP (Vector Arithmetic Exp)
+
+ ($retCode, $begIdx, $outReal) = TA_EXP($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_FLOOR (Vector Floor)
+
+ ($retCode, $begIdx, $outReal) = TA_FLOOR($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_LN (Vector Log Natural)
+
+ ($retCode, $begIdx, $outReal) = TA_LN($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_LOG10 (Vector Log10)
+
+ ($retCode, $begIdx, $outReal) = TA_LOG10($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SIN (Vector Trigonometric Sin)
+
+ ($retCode, $begIdx, $outReal) = TA_SIN($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SINH (Vector Trigonometric Sinh)
+
+ ($retCode, $begIdx, $outReal) = TA_SINH($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SQRT (Vector Square Root)
+
+ ($retCode, $begIdx, $outReal) = TA_SQRT($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TAN (Vector Trigonometric Tan)
+
+ ($retCode, $begIdx, $outReal) = TA_TAN($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TANH (Vector Trigonometric Tanh)
+
+ ($retCode, $begIdx, $outReal) = TA_TANH($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Overlap Studies
+
+=head3 TA_BBANDS (Bollinger Bands)
+
+ ($retCode, $begIdx, $outRealUpperBand, $outRealMiddleBand, $outRealLowerBand) = TA_BBANDS($startIdx, $endIdx, \@inReal, $optInTimePeriod, $optInNbDevUp, $optInNbDevDn, \@optInMATypeLISTint);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 5
+ #     valid range: min:2 max:100000 
+ # $optInNbDevUp - real number
+ #     default: 2
+ #     valid range: min:-3e+037 max:3e+037 precision:2 
+ # $optInNbDevDn - real number
+ #     default: 2
+ #     valid range: min:-3e+037 max:3e+037 precision:2 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outRealUpperBand - arrayref to real values array
+ # retval: $outRealMiddleBand - arrayref to real values array
+ # retval: $outRealLowerBand - arrayref to real values array
+
+
+=head3 TA_DEMA (Double Exponential Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_DEMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_EMA (Exponential Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_EMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_HT_TRENDLINE (Hilbert Transform - Instantaneous Trendline)
+
+ ($retCode, $begIdx, $outReal) = TA_HT_TRENDLINE($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_KAMA (Kaufman Adaptive Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_KAMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MA (Moving average)
+
+ ($retCode, $begIdx, $outReal) = TA_MA($startIdx, $endIdx, \@inReal, $optInTimePeriod, \@optInMATypeLISTint);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:1 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MAMA (MESA Adaptive Moving Average)
+
+ ($retCode, $begIdx, $outMAMA, $outFAMA) = TA_MAMA($startIdx, $endIdx, \@inReal, $optInFastLimit, $optInSlowLimit);
+ 
+ # @inReal - real values array
+ # $optInFastLimit - real number
+ #     default: 0.5
+ #     valid range: min:0.01 max:0.99 precision:2 
+ # $optInSlowLimit - real number
+ #     default: 0.05
+ #     valid range: min:0.01 max:0.99 precision:2 
+ # retval: $outMAMA - arrayref to real values array
+ # retval: $outFAMA - arrayref to real values array
+
+
+=head3 TA_MAVP (Moving average with variable period)
+
+ ($retCode, $begIdx, $outReal) = TA_MAVP($startIdx, $endIdx, \@inReal, \@inPeriods, $optInMinPeriod, $optInMaxPeriod, \@optInMATypeLISTint);
+ 
+ # @inReal - real values array
+ # @inPeriods - real values array
+ # $optInMinPeriod - integer
+ #     default: 2
+ #     valid range: min:2 max:100000 
+ # $optInMaxPeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MIDPOINT (MidPoint over period)
+
+ ($retCode, $begIdx, $outReal) = TA_MIDPOINT($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MIDPRICE (Midpoint Price over period)
+
+ ($retCode, $begIdx, $outReal) = TA_MIDPRICE($startIdx, $endIdx, \@high, \@low, $optInTimePeriod);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SAR (Parabolic SAR)
+
+ ($retCode, $begIdx, $outReal) = TA_SAR($startIdx, $endIdx, \@high, \@low, $optInAcceleration, $optInMaximum);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInAcceleration - real number
+ #     default: 0.02
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInMaximum - real number
+ #     default: 0.2
+ #     valid range: min:0 max:3e+037 precision:4 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SAREXT (Parabolic SAR - Extended)
+
+ ($retCode, $begIdx, $outReal) = TA_SAREXT($startIdx, $endIdx, \@high, \@low, $optInStartValue, $optInOffsetOnReverse, $optInAccelerationInitLong, $optInAccelerationLong, $optInAccelerationMaxLong, $optInAccelerationInitShort, $optInAccelerationShort, $optInAccelerationMaxShort);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInStartValue - real number
+ #     default: 0
+ #     valid range: min:-3e+037 max:3e+037 precision:4 
+ # $optInOffsetOnReverse - real number
+ #     default: 0
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInAccelerationInitLong - real number
+ #     default: 0.02
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInAccelerationLong - real number
+ #     default: 0.02
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInAccelerationMaxLong - real number
+ #     default: 0.2
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInAccelerationInitShort - real number
+ #     default: 0.02
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInAccelerationShort - real number
+ #     default: 0.02
+ #     valid range: min:0 max:3e+037 precision:4 
+ # $optInAccelerationMaxShort - real number
+ #     default: 0.2
+ #     valid range: min:0 max:3e+037 precision:4 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_SMA (Simple Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_SMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_T3 (Triple Exponential Moving Average (T3))
+
+ ($retCode, $begIdx, $outReal) = TA_T3($startIdx, $endIdx, \@inReal, $optInTimePeriod, $optInVFactor);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 5
+ #     valid range: min:2 max:100000 
+ # $optInVFactor - real number
+ #     default: 0.7
+ #     valid range: min:0 max:1 precision:2 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TEMA (Triple Exponential Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_TEMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TRIMA (Triangular Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_TRIMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_WMA (Weighted Moving Average)
+
+ ($retCode, $begIdx, $outReal) = TA_WMA($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Volatility Indicators
+
+=head3 TA_ATR (Average True Range)
+
+ ($retCode, $begIdx, $outReal) = TA_ATR($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_NATR (Normalized Average True Range)
+
+ ($retCode, $begIdx, $outReal) = TA_NATR($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TRANGE (True Range)
+
+ ($retCode, $begIdx, $outReal) = TA_TRANGE($startIdx, $endIdx, \@high, \@low, \@close);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Momentum Indicators
+
+=head3 TA_ADX (Average Directional Movement Index)
+
+ ($retCode, $begIdx, $outReal) = TA_ADX($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ADXR (Average Directional Movement Index Rating)
+
+ ($retCode, $begIdx, $outReal) = TA_ADXR($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_APO (Absolute Price Oscillator)
+
+ ($retCode, $begIdx, $outReal) = TA_APO($startIdx, $endIdx, \@inReal, $optInFastPeriod, $optInSlowPeriod, \@optInMATypeLISTint);
+ 
+ # @inReal - real values array
+ # $optInFastPeriod - integer
+ #     default: 12
+ #     valid range: min:2 max:100000 
+ # $optInSlowPeriod - integer
+ #     default: 26
+ #     valid range: min:2 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_AROON (Aroon)
+
+ ($retCode, $begIdx, $outAroonDown, $outAroonUp) = TA_AROON($startIdx, $endIdx, \@high, \@low, $optInTimePeriod);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outAroonDown - arrayref to real values array
+ # retval: $outAroonUp - arrayref to real values array
+
+
+=head3 TA_AROONOSC (Aroon Oscillator)
+
+ ($retCode, $begIdx, $outReal) = TA_AROONOSC($startIdx, $endIdx, \@high, \@low, $optInTimePeriod);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_BOP (Balance Of Power)
+
+ ($retCode, $begIdx, $outReal) = TA_BOP($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_CCI (Commodity Channel Index)
+
+ ($retCode, $begIdx, $outReal) = TA_CCI($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_CMO (Chande Momentum Oscillator)
+
+ ($retCode, $begIdx, $outReal) = TA_CMO($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_DX (Directional Movement Index)
+
+ ($retCode, $begIdx, $outReal) = TA_DX($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MACD (Moving Average Convergence/Divergence)
+
+ ($retCode, $begIdx, $outMACD, $outMACDSignal, $outMACDHist) = TA_MACD($startIdx, $endIdx, \@inReal, $optInFastPeriod, $optInSlowPeriod, $optInSignalPeriod);
+ 
+ # @inReal - real values array
+ # $optInFastPeriod - integer
+ #     default: 12
+ #     valid range: min:2 max:100000 
+ # $optInSlowPeriod - integer
+ #     default: 26
+ #     valid range: min:2 max:100000 
+ # $optInSignalPeriod - integer
+ #     default: 9
+ #     valid range: min:1 max:100000 
+ # retval: $outMACD - arrayref to real values array
+ # retval: $outMACDSignal - arrayref to real values array
+ # retval: $outMACDHist - arrayref to real values array
+
+
+=head3 TA_MACDEXT (MACD with controllable MA type)
+
+ ($retCode, $begIdx, $outMACD, $outMACDSignal, $outMACDHist) = TA_MACDEXT($startIdx, $endIdx, \@inReal, $optInFastPeriod, \@optInFastMATypeLISTint, $optInSlowPeriod, \@optInSlowMATypeLISTint, $optInSignalPeriod, \@optInSignalMATypeLISTint);
+ 
+ # @inReal - real values array
+ # $optInFastPeriod - integer
+ #     default: 12
+ #     valid range: min:2 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # $optInSlowPeriod - integer
+ #     default: 26
+ #     valid range: min:2 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # $optInSignalPeriod - integer
+ #     default: 9
+ #     valid range: min:1 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outMACD - arrayref to real values array
+ # retval: $outMACDSignal - arrayref to real values array
+ # retval: $outMACDHist - arrayref to real values array
+
+
+=head3 TA_MACDFIX (Moving Average Convergence/Divergence Fix 12/26)
+
+ ($retCode, $begIdx, $outMACD, $outMACDSignal, $outMACDHist) = TA_MACDFIX($startIdx, $endIdx, \@inReal, $optInSignalPeriod);
+ 
+ # @inReal - real values array
+ # $optInSignalPeriod - integer
+ #     default: 9
+ #     valid range: min:1 max:100000 
+ # retval: $outMACD - arrayref to real values array
+ # retval: $outMACDSignal - arrayref to real values array
+ # retval: $outMACDHist - arrayref to real values array
+
+
+=head3 TA_MFI (Money Flow Index)
+
+ ($retCode, $begIdx, $outReal) = TA_MFI($startIdx, $endIdx, \@high, \@low, \@close, \@volume, $optInTimePeriod);
+ 
+ # @high, @low, @close, @volume - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MINUS_DI (Minus Directional Indicator)
+
+ ($retCode, $begIdx, $outReal) = TA_MINUS_DI($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MINUS_DM (Minus Directional Movement)
+
+ ($retCode, $begIdx, $outReal) = TA_MINUS_DM($startIdx, $endIdx, \@high, \@low, $optInTimePeriod);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MOM (Momentum)
+
+ ($retCode, $begIdx, $outReal) = TA_MOM($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 10
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_PLUS_DI (Plus Directional Indicator)
+
+ ($retCode, $begIdx, $outReal) = TA_PLUS_DI($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_PLUS_DM (Plus Directional Movement)
+
+ ($retCode, $begIdx, $outReal) = TA_PLUS_DM($startIdx, $endIdx, \@high, \@low, $optInTimePeriod);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_PPO (Percentage Price Oscillator)
+
+ ($retCode, $begIdx, $outReal) = TA_PPO($startIdx, $endIdx, \@inReal, $optInFastPeriod, $optInSlowPeriod, \@optInMATypeLISTint);
+ 
+ # @inReal - real values array
+ # $optInFastPeriod - integer
+ #     default: 12
+ #     valid range: min:2 max:100000 
+ # $optInSlowPeriod - integer
+ #     default: 26
+ #     valid range: min:2 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ROC (Rate of change : ((price/prevPrice)-1)*100)
+
+ ($retCode, $begIdx, $outReal) = TA_ROC($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 10
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ROCP (Rate of change Percentage: (price-prevPrice)/prevPrice)
+
+ ($retCode, $begIdx, $outReal) = TA_ROCP($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 10
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ROCR (Rate of change ratio: (price/prevPrice))
+
+ ($retCode, $begIdx, $outReal) = TA_ROCR($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 10
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ROCR100 (Rate of change ratio 100 scale: (price/prevPrice)*100)
+
+ ($retCode, $begIdx, $outReal) = TA_ROCR100($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 10
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_RSI (Relative Strength Index)
+
+ ($retCode, $begIdx, $outReal) = TA_RSI($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_STOCH (Stochastic)
+
+ ($retCode, $begIdx, $outSlowK, $outSlowD) = TA_STOCH($startIdx, $endIdx, \@high, \@low, \@close, $optInFastK_Period, $optInSlowK_Period, \@optInSlowK_MATypeLISTint, $optInSlowD_Period, \@optInSlowD_MATypeLISTint);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInFastK_Period - integer
+ #     default: 5
+ #     valid range: min:1 max:100000 
+ # $optInSlowK_Period - integer
+ #     default: 3
+ #     valid range: min:1 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # $optInSlowD_Period - integer
+ #     default: 3
+ #     valid range: min:1 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outSlowK - arrayref to real values array
+ # retval: $outSlowD - arrayref to real values array
+
+
+=head3 TA_STOCHF (Stochastic Fast)
+
+ ($retCode, $begIdx, $outFastK, $outFastD) = TA_STOCHF($startIdx, $endIdx, \@high, \@low, \@close, $optInFastK_Period, $optInFastD_Period, \@optInFastD_MATypeLISTint);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInFastK_Period - integer
+ #     default: 5
+ #     valid range: min:1 max:100000 
+ # $optInFastD_Period - integer
+ #     default: 3
+ #     valid range: min:1 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outFastK - arrayref to real values array
+ # retval: $outFastD - arrayref to real values array
+
+
+=head3 TA_STOCHRSI (Stochastic Relative Strength Index)
+
+ ($retCode, $begIdx, $outFastK, $outFastD) = TA_STOCHRSI($startIdx, $endIdx, \@inReal, $optInTimePeriod, $optInFastK_Period, $optInFastD_Period, \@optInFastD_MATypeLISTint);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # $optInFastK_Period - integer
+ #     default: 5
+ #     valid range: min:1 max:100000 
+ # $optInFastD_Period - integer
+ #     default: 3
+ #     valid range: min:1 max:100000 
+ #     default: 0
+ #     valid list: SMA:0 EMA:1 WMA:2 DEMA:3 TEMA:4 TRIMA:5 KAMA:6 MAMA:7 T3:8
+ # retval: $outFastK - arrayref to real values array
+ # retval: $outFastD - arrayref to real values array
+
+
+=head3 TA_TRIX (1-day Rate-Of-Change (ROC) of a Triple Smooth EMA)
+
+ ($retCode, $begIdx, $outReal) = TA_TRIX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ULTOSC (Ultimate Oscillator)
+
+ ($retCode, $begIdx, $outReal) = TA_ULTOSC($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod1, $optInTimePeriod2, $optInTimePeriod3);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod1 - integer
+ #     default: 7
+ #     valid range: min:1 max:100000 
+ # $optInTimePeriod2 - integer
+ #     default: 14
+ #     valid range: min:1 max:100000 
+ # $optInTimePeriod3 - integer
+ #     default: 28
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_WILLR (Williams' %R)
+
+ ($retCode, $begIdx, $outReal) = TA_WILLR($startIdx, $endIdx, \@high, \@low, \@close, $optInTimePeriod);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Cycle Indicators
+
+=head3 TA_HT_DCPERIOD (Hilbert Transform - Dominant Cycle Period)
+
+ ($retCode, $begIdx, $outReal) = TA_HT_DCPERIOD($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_HT_DCPHASE (Hilbert Transform - Dominant Cycle Phase)
+
+ ($retCode, $begIdx, $outReal) = TA_HT_DCPHASE($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_HT_PHASOR (Hilbert Transform - Phasor Components)
+
+ ($retCode, $begIdx, $outInPhase, $outQuadrature) = TA_HT_PHASOR($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outInPhase - arrayref to real values array
+ # retval: $outQuadrature - arrayref to real values array
+
+
+=head3 TA_HT_SINE (Hilbert Transform - SineWave)
+
+ ($retCode, $begIdx, $outSine, $outLeadSine) = TA_HT_SINE($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outSine - arrayref to real values array
+ # retval: $outLeadSine - arrayref to real values array
+
+
+=head3 TA_HT_TRENDMODE (Hilbert Transform - Trend vs Cycle Mode)
+
+ ($retCode, $begIdx, $outInteger) = TA_HT_TRENDMODE($startIdx, $endIdx, \@inReal);
+ 
+ # @inReal - real values array
+ # retval: $outInteger - arrayref to integer values array
+
+
+
+=head2 Group: Volume Indicators
+
+=head3 TA_AD (Chaikin A/D Line)
+
+ ($retCode, $begIdx, $outReal) = TA_AD($startIdx, $endIdx, \@high, \@low, \@close, \@volume);
+ 
+ # @high, @low, @close, @volume - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_ADOSC (Chaikin A/D Oscillator)
+
+ ($retCode, $begIdx, $outReal) = TA_ADOSC($startIdx, $endIdx, \@high, \@low, \@close, \@volume, $optInFastPeriod, $optInSlowPeriod);
+ 
+ # @high, @low, @close, @volume - real values arrays, all have to be the same size
+ # $optInFastPeriod - integer
+ #     default: 3
+ #     valid range: min:2 max:100000 
+ # $optInSlowPeriod - integer
+ #     default: 10
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_OBV (On Balance Volume)
+
+ ($retCode, $begIdx, $outReal) = TA_OBV($startIdx, $endIdx, \@inReal, \@volume);
+ 
+ # @inReal - real values array
+ # @volume - real value array
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Pattern Recognition
+
+=head3 TA_CDL2CROWS (Two Crows)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL2CROWS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDL3BLACKCROWS (Three Black Crows)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL3BLACKCROWS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDL3INSIDE (Three Inside Up/Down)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL3INSIDE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDL3LINESTRIKE (Three-Line Strike )
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL3LINESTRIKE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDL3OUTSIDE (Three Outside Up/Down)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL3OUTSIDE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDL3STARSINSOUTH (Three Stars In The South)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL3STARSINSOUTH($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDL3WHITESOLDIERS (Three Advancing White Soldiers)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDL3WHITESOLDIERS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLABANDONEDBABY (Abandoned Baby)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLABANDONEDBABY($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.3
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLADVANCEBLOCK (Advance Block)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLADVANCEBLOCK($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLBELTHOLD (Belt-hold)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLBELTHOLD($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLBREAKAWAY (Breakaway)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLBREAKAWAY($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLCLOSINGMARUBOZU (Closing Marubozu)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLCLOSINGMARUBOZU($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLCONCEALBABYSWALL (Concealing Baby Swallow)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLCONCEALBABYSWALL($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLCOUNTERATTACK (Counterattack)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLCOUNTERATTACK($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLDARKCLOUDCOVER (Dark Cloud Cover)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLDARKCLOUDCOVER($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.5
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLDOJI (Doji)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLDOJI($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLDOJISTAR (Doji Star)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLDOJISTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLDRAGONFLYDOJI (Dragonfly Doji)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLDRAGONFLYDOJI($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLENGULFING (Engulfing Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLENGULFING($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLEVENINGDOJISTAR (Evening Doji Star)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLEVENINGDOJISTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.3
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLEVENINGSTAR (Evening Star)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLEVENINGSTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.3
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLGAPSIDESIDEWHITE (Up/Down-gap side-by-side white lines)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLGAPSIDESIDEWHITE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLGRAVESTONEDOJI (Gravestone Doji)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLGRAVESTONEDOJI($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHAMMER (Hammer)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHAMMER($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHANGINGMAN (Hanging Man)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHANGINGMAN($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHARAMI (Harami Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHARAMI($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHARAMICROSS (Harami Cross Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHARAMICROSS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHIGHWAVE (High-Wave Candle)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHIGHWAVE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHIKKAKE (Hikkake Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHIKKAKE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHIKKAKEMOD (Modified Hikkake Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHIKKAKEMOD($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLHOMINGPIGEON (Homing Pigeon)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLHOMINGPIGEON($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLIDENTICAL3CROWS (Identical Three Crows)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLIDENTICAL3CROWS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLINNECK (In-Neck Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLINNECK($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLINVERTEDHAMMER (Inverted Hammer)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLINVERTEDHAMMER($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLKICKING (Kicking)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLKICKING($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLKICKINGBYLENGTH (Kicking - bull/bear determined by the longer marubozu)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLKICKINGBYLENGTH($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLLADDERBOTTOM (Ladder Bottom)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLLADDERBOTTOM($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLLONGLEGGEDDOJI (Long Legged Doji)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLLONGLEGGEDDOJI($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLLONGLINE (Long Line Candle)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLLONGLINE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLMARUBOZU (Marubozu)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLMARUBOZU($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLMATCHINGLOW (Matching Low)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLMATCHINGLOW($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLMATHOLD (Mat Hold)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLMATHOLD($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.5
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLMORNINGDOJISTAR (Morning Doji Star)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLMORNINGDOJISTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.3
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLMORNINGSTAR (Morning Star)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLMORNINGSTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close, $optInPenetration);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # $optInPenetration - real number
+ #     default: 0.3
+ #     valid range: min:0 max:3e+037 precision:0 
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLONNECK (On-Neck Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLONNECK($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLPIERCING (Piercing Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLPIERCING($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLRICKSHAWMAN (Rickshaw Man)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLRICKSHAWMAN($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLRISEFALL3METHODS (Rising/Falling Three Methods)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLRISEFALL3METHODS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLSEPARATINGLINES (Separating Lines)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLSEPARATINGLINES($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLSHOOTINGSTAR (Shooting Star)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLSHOOTINGSTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLSHORTLINE (Short Line Candle)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLSHORTLINE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLSPINNINGTOP (Spinning Top)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLSPINNINGTOP($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLSTALLEDPATTERN (Stalled Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLSTALLEDPATTERN($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLSTICKSANDWICH (Stick Sandwich)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLSTICKSANDWICH($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLTAKURI (Takuri (Dragonfly Doji with very long lower shadow))
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLTAKURI($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLTASUKIGAP (Tasuki Gap)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLTASUKIGAP($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLTHRUSTING (Thrusting Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLTHRUSTING($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLTRISTAR (Tristar Pattern)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLTRISTAR($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLUNIQUE3RIVER (Unique 3 River)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLUNIQUE3RIVER($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLUPSIDEGAP2CROWS (Upside Gap Two Crows)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLUPSIDEGAP2CROWS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+=head3 TA_CDLXSIDEGAP3METHODS (Upside/Downside Gap Three Methods)
+
+ ($retCode, $begIdx, $outInteger) = TA_CDLXSIDEGAP3METHODS($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outInteger - arrayref to integer values array
+
+
+
+=head2 Group: Statistic Functions
+
+=head3 TA_BETA (Beta)
+
+ ($retCode, $begIdx, $outReal) = TA_BETA($startIdx, $endIdx, \@inReal0, \@inReal1, $optInTimePeriod);
+ 
+ # @inReal0 - real values array
+ # @inReal1 - real values array
+ # $optInTimePeriod - integer
+ #     default: 5
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_CORREL (Pearson's Correlation Coefficient (r))
+
+ ($retCode, $begIdx, $outReal) = TA_CORREL($startIdx, $endIdx, \@inReal0, \@inReal1, $optInTimePeriod);
+ 
+ # @inReal0 - real values array
+ # @inReal1 - real values array
+ # $optInTimePeriod - integer
+ #     default: 30
+ #     valid range: min:1 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_LINEARREG (Linear Regression)
+
+ ($retCode, $begIdx, $outReal) = TA_LINEARREG($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_LINEARREG_ANGLE (Linear Regression Angle)
+
+ ($retCode, $begIdx, $outReal) = TA_LINEARREG_ANGLE($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_LINEARREG_INTERCEPT (Linear Regression Intercept)
+
+ ($retCode, $begIdx, $outReal) = TA_LINEARREG_INTERCEPT($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_LINEARREG_SLOPE (Linear Regression Slope)
+
+ ($retCode, $begIdx, $outReal) = TA_LINEARREG_SLOPE($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_STDDEV (Standard Deviation)
+
+ ($retCode, $begIdx, $outReal) = TA_STDDEV($startIdx, $endIdx, \@inReal, $optInTimePeriod, $optInNbDev);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 5
+ #     valid range: min:2 max:100000 
+ # $optInNbDev - real number
+ #     default: 1
+ #     valid range: min:-3e+037 max:3e+037 precision:2 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TSF (Time Series Forecast)
+
+ ($retCode, $begIdx, $outReal) = TA_TSF($startIdx, $endIdx, \@inReal, $optInTimePeriod);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 14
+ #     valid range: min:2 max:100000 
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_VAR (Variance)
+
+ ($retCode, $begIdx, $outReal) = TA_VAR($startIdx, $endIdx, \@inReal, $optInTimePeriod, $optInNbDev);
+ 
+ # @inReal - real values array
+ # $optInTimePeriod - integer
+ #     default: 5
+ #     valid range: min:1 max:100000 
+ # $optInNbDev - real number
+ #     default: 1
+ #     valid range: min:-3e+037 max:3e+037 precision:2 
+ # retval: $outReal - arrayref to real values array
+
+
+
+=head2 Group: Price Transform
+
+=head3 TA_AVGPRICE (Average Price)
+
+ ($retCode, $begIdx, $outReal) = TA_AVGPRICE($startIdx, $endIdx, \@open, \@high, \@low, \@close);
+ 
+ # @open, @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_MEDPRICE (Median Price)
+
+ ($retCode, $begIdx, $outReal) = TA_MEDPRICE($startIdx, $endIdx, \@high, \@low);
+ 
+ # @high, @low - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_TYPPRICE (Typical Price)
+
+ ($retCode, $begIdx, $outReal) = TA_TYPPRICE($startIdx, $endIdx, \@high, \@low, \@close);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
+
+=head3 TA_WCLPRICE (Weighted Close Price)
+
+ ($retCode, $begIdx, $outReal) = TA_WCLPRICE($startIdx, $endIdx, \@high, \@low, \@close);
+ 
+ # @high, @low, @close - real values arrays, all have to be the same size
+ # retval: $outReal - arrayref to real values array
+
 
 =head1 LICENSE AND COPYRIGHT
 

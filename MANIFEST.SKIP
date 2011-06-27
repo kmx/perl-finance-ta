@@ -6,6 +6,7 @@
 ^MANIFEST\.SKIP
 \bblib/
 \b_tmp/
+\b_generate/
 \bpm_to_blib/
 \bMakefile$
 
@@ -18,13 +19,15 @@
 \.tmp$
 \.#
 \.rej$
-\.c$
 \.o$
 \.obj$
 \.base$
 \.bs$
 \.def$
 \.exp$
+^tmp
+
+TA\.c$
 
 # Avoid configuration metadata file
 ^MYMETA\.
