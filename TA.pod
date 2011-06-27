@@ -30,7 +30,7 @@ The first two params C<$startIdx> and C<$endIdxReturn> are common for all TA fun
 
 =item * B<$startIdx> start index for input data - most likely it sould be C<0>
 
-=item * B<$endIdxReturn> end index for input data - most likely it sould be C<$#inReal>
+=item * B<$endIdx> end index for input data - most likely it sould be C<$#inReal> (the last index of C<@inReal>)
 
 =back
 
