@@ -2,7 +2,3 @@ Revision history for Finance-TA
 
 v0.4.0	28/06/2011
 	- This corresponds to SVN tag release-0-4-0, version string fixed to v0.4.0
-
-v0.3.0	27/06/2011
-	- Finance::TA taken from the original ta-lib (v0.4.0) tarball and released to CPAN
-	- for some reason ta-lib-0.4.0-msvc.zip contains v0.3.0 version of perl module Finance::TA
