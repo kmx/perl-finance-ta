@@ -95,7 +95,7 @@ Finance::TA module checks during its installation (in given order):
 
 =head3 TA_GetVersionString
 
-=head3 TA_GetVersionMajor¨
+=head3 TA_GetVersionMajor
 
 =head3 TA_GetVersionMinor
 

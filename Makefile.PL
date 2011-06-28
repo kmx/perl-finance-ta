@@ -14,17 +14,20 @@ WriteMakefile(
   NAME         => 'Finance::TA',
   ABSTRACT     => 'Perl wrapper for Technical Analysis Library',
   AUTHOR       => 'Wim Verhaegen <wimv@cpan.org>',
-  VERSION      => 'v0.3.0_01',
+  VERSION      => 'v0.3.0_02',
   LIBS         => [$libs],
   INC          => $cflags,
   OBJECT       => '$(O_FILES)',
   PREREQ_PM    => { 'Test'   => 0 },
+  LICENSE      => 'bsd',
   dist         => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
   clean        => { FILES => 'Finance-TA-*' },
   META_MERGE   => {
       no_index     => { directory => ['_swig'] },
-      homepage     => 'http://ta-lib.org/',
-      repository   => 'https://github.com/kmx/perl-finance-ta',
+      resources    => {
+          homepage     => 'http://ta-lib.org/',
+          repository   => 'https://github.com/kmx/perl-finance-ta',
+      },
   },
   # generating ta_libc_wrap.c + TA.pm via swig (needed only when upgrading to the newer version)
   'depend'       => { 
