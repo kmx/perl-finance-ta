@@ -16,9 +16,19 @@ Perl bindings for TA-Lib are more or less 1:1 wrapper around the TA-Lib's C API 
 
 =head1 SYNOPSIS
 
+ use Finance::TA;
+ 
  my @series = ('91.500000','94.815000','94.375000','95.095000','93.780000',
                '94.625000','92.530000','92.750000','90.315000','92.470000');
+
  my ($retCode, $begIdx, $result) = TA_MAX(0, $#series, \@series, 4);
+ 
+ if($retCode == $TA_SUCCESS) {
+   print("max[$_] = ", $result->[$_], "\n") for ($begIdx .. scalar(@$result)-1);
+ }
+ else {
+   die "error during TA_MAX";
+ }
 
 General calling convention works in the following way:
 
@@ -61,7 +71,7 @@ Return values C<$retCode> and C<$begIdx> are common for all TA functions, they f
  #  $TA_INTERNAL_ERROR
  #  $TA_UNKNOWN_ERR
 
-=item * B<$begIdx> is expected to be 0; it is an index to C<@$outReal> array, it points to the beginning of the output data
+=item * B<$begIdx> it is an index to C<@$outReal> array, it points to the beginning of the output data
 
 =back
 
