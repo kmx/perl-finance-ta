@@ -14,7 +14,7 @@ WriteMakefile(
   NAME         => 'Finance::TA',
   ABSTRACT     => 'Perl wrapper for Technical Analysis Library',
   AUTHOR       => 'Wim Verhaegen <wimv@cpan.org>',
-  VERSION      => 'v0.4.0',
+  VERSION      => 'v0.3.0_03',
   LIBS         => [$libs],
   INC          => $cflags,
   OBJECT       => '$(O_FILES)',
