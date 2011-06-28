@@ -4,13 +4,13 @@ Finance::TA - Perl wrapper for Technical Analysis Library (http://ta-lib.org)
 
 =head1 VERSION
 
-Version 0.3.0
+Version 0.4.0
 
 =head1 DESCRIPTION
 
-L<TA-Lib|"http://ta-lib.org"> comprise of multi-platform tools for market analysis. TA-Lib is widely used
+L<TA-Lib|http://ta-lib.org> comprise of multi-platform tools for market analysis. TA-Lib is widely used
 by trading software developers requiring to perform technical analysis of financial market data.
-It includes approx 200 indicators such as ADX, MACD, RSI, Stochastic, Bollinger Bands etc.
+It includes approx. 200 indicators such as ADX, MACD, RSI, Stochastic, Bollinger Bands etc.
 
 Perl bindings for TA-Lib are more or less 1:1 wrapper around the TA-Lib's C API functions.
 
@@ -20,7 +20,7 @@ Perl bindings for TA-Lib are more or less 1:1 wrapper around the TA-Lib's C API 
                '94.625000','92.530000','92.750000','90.315000','92.470000');
  my ($retCode, $begIdx, $result) = TA_MAX(0, $#series, \@series, 4);
 
-General calling convention - let us have:
+General calling convention works in the following way:
 
   ($retCode, $begIdx, $outReal) = TA_MAX($startIdx, $endIdx, \@inReal, $optInTimePeriod);
 
@@ -28,9 +28,9 @@ The first two params C<$startIdx> and C<$endIdxReturn> are common for all TA fun
 
 =over
 
-=item * B<$startIdx> start index for input data - most likely it sould be C<0>
+=item * B<$startIdx> start index for input data - most likely it will be C<0>
 
-=item * B<$endIdx> end index for input data - most likely it sould be C<$#inReal> (the last index of C<@inReal>)
+=item * B<$endIdx> end index for input data - most likely it will be C<$#inReal> (the last index of C<@inReal>)
 
 =back
 
@@ -67,7 +67,7 @@ Return values C<$retCode> and C<$begIdx> are common for all TA functions, they f
 
 =head1 INSTALLATION
 
-You need to have ta-lib installed on your system in order to install Finance::TA perl module.
+You need to have L<TA-Lib|http://ta-lib.org> - B<version 0.4.0 or better> - installed on your system in order to install Finance::TA perl module.
 
 Finance::TA module checks during its installation (in given order):
 
@@ -75,16 +75,35 @@ Finance::TA module checks during its installation (in given order):
 
 =item * Environment variables C<TALIB_CFLAGS> and C<TALIB_LIBS>
 
- # you can use these like:
+ # you can use these variables like this:
  TALIB_CFLAGS='-I/usr/local/include/ta-lib' TALIB_LIBS='-L/usr/local/lib -lta_lib' perl Makefile.PL
 
 =item * Config script C<ta-lib-config --cflags> and C<ta-lib-config --libs>
+
+ # BEWARE!!! check whether your ta-lib-config returns correct info
+ $ ta-lib-config --cflags
+ -I/usr/local/include/ta-lib
+ 
+ $ ta-lib-config --cflags
+ -L/usr/local/lib -lta_lib
 
 =back
 
 =head1 SUBROUTINES/METHODS
 
 =head2 Version Related Functions
+
+=head3 TA_GetVersionString
+
+=head3 TA_GetVersionMajor¨
+
+=head3 TA_GetVersionMinor
+
+=head3 TA_GetVersionBuild
+
+=head3 TA_GetVersionDate
+
+=head3 TA_GetVersionTime
 
  use Finance::TA;
  print "TA_GetVersionString = ", TA_GetVersionString(), "\n";
@@ -104,6 +123,10 @@ Prints something like:
  TA_GetVersionTime   = 08:34:04
  
 =head2 Special Helper Functions
+
+=head3 TA_SetUnstablePeriod
+
+=head3 TA_GetUnstablePeriod
 
 Some TA functions takes a certain amount of input data
 before stabilizing and outputing meaningful data. This is
@@ -142,6 +165,10 @@ data from your output and from any internal processing.
  #  $TA_FUNC_UNST_ALL
  #  $TA_FUNC_UNST_NONE
 
+=head3 TA_SetCompatibility
+
+=head3 TA_GetCompatibility
+
 You can change slightly the behavior of the TA functions
 by requesting compatibiliy with some existing software.
 By default, the behavior is as close as the original 
@@ -153,6 +180,10 @@ author of the TA functions intend it to be.
  #valid $compatibility values
  #  $TA_COMPATIBILITY_DEFAULT
  #  $TA_COMPATIBILITY_METASTOCK
+
+=head3 TA_SetCandleSettings
+
+=head3 TA_RestoreCandleDefaultSettings
 
 Because candlestick patterns are subjective, it is necessary 
 to allow the user to specify what should be the meaning of 
@@ -184,6 +215,8 @@ This setting is valid until TA_RestoreCandleDefaultSettings is called
  #  $TA_RangeType_HighLow
  #  $TA_RangeType_Shadows
 
+=head3 TA_SetRetCodeInfo
+
 End-user can get additional information related to a TA_RetCode
  
  # let us have $retCode = return code of any TA_* function
@@ -192,8 +225,12 @@ End-user can get additional information related to a TA_RetCode
  warn "enumStr=", $rci->{enumStr}, "\n";
  warn "infoStr=", $rci->{infoStr}, "\n";
 
-TA_Initialize() initialize the ressources used by TA-Lib.
-TA_Shutdown() allows to free all ressources used by TA-Lib.
+=head3 TA_Initialize
+
+=head3 TA_Shutdown
+
+TA_Initialize initializes the ressources used by TA-Lib.
+TA_Shutdown allows to free all ressources used by TA-Lib.
 
 There is no need to call TA_Initialize.  The module initializes itself on
 'use' with default parameters.  Call TA_Initialize if you need to provide
