@@ -1,4 +1,7 @@
 Revision history for Finance-TA
 
-v0.4.0	28/06/2011
-	- This corresponds to SVN tag release-0-4-0, version string fixed to v0.4.0
+v0.4.1  01/04/2013
+        - fixing broken `ta-lib-config --libs` output
+
+v0.4.0  28/06/2011
+        - This corresponds to SVN tag release-0-4-0, version string fixed to v0.4.0

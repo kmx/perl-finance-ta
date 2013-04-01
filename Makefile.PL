@@ -2,19 +2,34 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-my $libs = defined $ENV{TALIB_LIBS} ? $ENV{TALIB_LIBS} : `ta-lib-config --libs`;
-my $cflags = defined $ENV{TALIB_CFLAGS} ? $ENV{TALIB_CFLAGS} : `ta-lib-config --cflags`;
+my $libs = $ENV{TALIB_LIBS};
+if (!defined $libs) {
+  $libs = `ta-lib-config --libs`;
+  $libs =~ s/[\s\n\r]*$//;
+  #XXX-HACK fixing broken ta-lib-config output
+  $libs .= " -lta_lib" if $libs && $libs !~ /-lta_lib/;
+}
+
+my $cflags = $ENV{TALIB_CFLAGS};
+if (!defined $cflags) {
+ $cflags = `ta-lib-config --cflags`;
+ $cflags =~ s/[\s\n\r]*$//;
+}
 
 unless ($libs) {
   warn "\nERROR: ta-lib not found on your system!\n\n";
   exit 0;
 }
 
+warn "Gonna use\n",
+     " cflags: '$cflags'\n",
+     " libs:   '$libs'\n";
+
 WriteMakefile(
   NAME         => 'Finance::TA',
   ABSTRACT     => 'Perl wrapper for Technical Analysis Library',
   AUTHOR       => 'Wim Verhaegen <wimv@cpan.org>',
-  VERSION      => 'v0.4.0',
+  VERSION      => 'v0.4.1',
   LIBS         => [$libs],
   INC          => $cflags,
   OBJECT       => '$(O_FILES)',
