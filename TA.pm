@@ -972,7 +972,7 @@ foreach (keys %Finance::TA::) {
     if (/^TA_/) {
         local *::sym = $Finance::TA::{$_};        
         push(@Finance::TA::EXPORT, "\$$_") if defined $::sym;
-        push(@Finance::TA::EXPORT, "\@$_") if defined @::sym;
+        push(@Finance::TA::EXPORT, "\@$_") if @::sym;
         push(@Finance::TA::EXPORT, "\%$_") if %::sym;
         push(@Finance::TA::EXPORT, $_) if defined &::sym;
     }

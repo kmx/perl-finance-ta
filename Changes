@@ -1,7 +1,10 @@
 Revision history for Finance-TA
 
-v0.4.1  01/04/2013
+v0.4.1  2014-03-03
+        - fixing defined(@array) is deprecated
+
+v0.4.1  2013-04-01
         - fixing broken `ta-lib-config --libs` output
 
-v0.4.0  28/06/2011
+v0.4.0  2011-06-28
         - This corresponds to SVN tag release-0-4-0, version string fixed to v0.4.0
