@@ -29,7 +29,7 @@ WriteMakefile(
   NAME         => 'Finance::TA',
   ABSTRACT     => 'Perl wrapper for Technical Analysis Library',
   AUTHOR       => 'Wim Verhaegen <wimv@cpan.org>',
-  VERSION      => 'v0.4.1',
+  VERSION      => 'v0.4.2', # has to be changed on 4 places!!!
   LIBS         => [$libs],
   INC          => $cflags,
   OBJECT       => '$(O_FILES)',
@@ -37,7 +37,8 @@ WriteMakefile(
   LICENSE      => 'bsd',
   dist         => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
   clean        => { FILES => 'Finance-TA-*' },
-  META_MERGE   => {
+  META_MERGE   => { 
+      provides     => { 'Finance::TA' => { file => 'TA.pm', version => 'v0.4.2'} },
       no_index     => { directory => ['_swig'] },
       resources    => {
           homepage     => 'http://ta-lib.org/',
@@ -45,6 +46,7 @@ WriteMakefile(
       },
   },
   # generating ta_libc_wrap.c + TA.pm via swig (needed only when upgrading to the newer version)
+  # make ta_libc_wrap.c
   'depend'       => { 
       'ta_libc_wrap.c TA.pm' => "_swig/ta_func.swg _swig/ta_libc.swg _swig/perl.pm\n".
           "\tswig -perl5 -module \"Finance::TA\" -proxy -Fstandard -o ta_libc_wrap.c -I/usr/local/include/ta-lib _swig/ta_libc.swg\n".

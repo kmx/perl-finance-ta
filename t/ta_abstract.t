@@ -8,7 +8,7 @@ use strict;
 use Test;
 BEGIN { plan tests => 79 }
 
-use Finance::TA v0.4.0;
+use Finance::TA;
 
 print "TA-Lib ", TA_GetVersionString(), "\n";
 print "Testing ta_abstract...\n";

@@ -1,6 +1,7 @@
 Revision history for Finance-TA
 
-v0.4.1  2014-03-03
+v0.4.2  2014-04-15
+        - PAUSE indexer related changes
         - fixing defined(@array) is deprecated
 
 v0.4.1  2013-04-01
