@@ -1441,9 +1441,6 @@ SWIG_Perl_SetModule(swig_module_info *module) {
 #ifdef eof
   #undef eof
 #endif
-#ifdef bool
-  #undef bool
-#endif
 #ifdef close
   #undef close
 #endif

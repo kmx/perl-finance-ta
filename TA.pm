@@ -933,7 +933,7 @@ package Finance::TA;
 
 use strict;
 
-our $VERSION = v0.4.2;
+our $VERSION = v0.4.3;
 
 our $INITIALIZED = 0;
 

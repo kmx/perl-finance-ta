@@ -3,17 +3,28 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 my $libs = $ENV{TALIB_LIBS};
-if (!defined $libs) {
-  $libs = `ta-lib-config --libs`;
-  $libs =~ s/[\s\n\r]*$//;
-  #XXX-HACK fixing broken ta-lib-config output
-  $libs .= " -lta_lib" if $libs && $libs !~ /-lta_lib/;
-}
-
 my $cflags = $ENV{TALIB_CFLAGS};
-if (!defined $cflags) {
- $cflags = `ta-lib-config --cflags`;
- $cflags =~ s/[\s\n\r]*$//;
+
+eval { require Alien::TALib };
+if ( !$@ ) {
+  warn "Using ta-lib via Alien::TALib\n";
+  my $alien = Alien::TALib->new;
+  $libs   = $alien->libs   if !defined $libs;
+  $cflags = $alien->cflags if !defined $cflags;
+}
+else {
+  warn "Alien::TALib not found, trying ta-lib-config\n";
+  if (!defined $libs) {
+    $libs = `ta-lib-config --libs`;
+    $libs =~ s/[\s\n\r]*$//;
+    #XXX-HACK fixing broken ta-lib-config output
+    $libs .= " -lta_lib" if $libs && $libs !~ /-lta_lib/;
+  }
+
+  if (!defined $cflags) {
+   $cflags = `ta-lib-config --cflags`;
+   $cflags =~ s/[\s\n\r]*$//;
+  }
 }
 
 unless ($libs) {
@@ -29,7 +40,7 @@ WriteMakefile(
   NAME         => 'Finance::TA',
   ABSTRACT     => 'Perl wrapper for Technical Analysis Library',
   AUTHOR       => 'Wim Verhaegen <wimv@cpan.org>',
-  VERSION      => 'v0.4.2', # has to be changed on 4 places!!!
+  VERSION      => 'v0.4.3', # has to be changed on 4 places!!!
   LIBS         => [$libs],
   INC          => $cflags,
   OBJECT       => '$(O_FILES)',
@@ -38,7 +49,7 @@ WriteMakefile(
   dist         => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
   clean        => { FILES => 'Finance-TA-*' },
   META_MERGE   => { 
-      provides     => { 'Finance::TA' => { file => 'TA.pm', version => 'v0.4.2'} },
+      provides     => { 'Finance::TA' => { file => 'TA.pm', version => 'v0.4.3'} },
       no_index     => { directory => ['_swig'] },
       resources    => {
           homepage     => 'http://ta-lib.org/',
